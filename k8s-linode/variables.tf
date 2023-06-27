@@ -1,3 +1,10 @@
+variable "cloudflare_api_key" {
+  description = "Cloudflare API Key"
+}
+variable "cloudflare_email" {
+  description = "Cloudflare Email"
+}
+
 variable "linode_token" {
   description = " Linode API token"
 }
@@ -10,7 +17,7 @@ variable "k8s_version" {
 variable "linode_count" {
   description = "The number of Linode instances to deploy."
   type        = number
-  default     = 5
+  default     = 3
 }
 
 variable "image" {
@@ -30,7 +37,7 @@ variable "region" {
 
 variable "type" {
   description = "Your Linode's plan type."
-  default     = "g6-standard-2"
+  default     = "g6-standard-1"
 }
 
 variable "linode_root_password" {

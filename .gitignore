@@ -35,3 +35,7 @@ terraform.rc
 
 # Ignore HCL
 *.hcl
+
+# Ignore Backend and kubeconfig.yaml (** IMPORTANT ***)
+*/backend
+*/.kube

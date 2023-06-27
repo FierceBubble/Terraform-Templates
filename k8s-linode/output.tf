@@ -22,3 +22,7 @@ output "pool" {
 output "linode_id" {
   value = linode_lke_cluster.tf-k8s-cluster.pool[0].nodes[*].instance_id
 }
+
+# output "cluster_ca_certificate" {
+#   value = yamldecode(nonsensitive(base64decode(linode_lke_cluster.tf-k8s-cluster.kubeconfig))).clusters.0.cluster.certificate-authority-data
+# }

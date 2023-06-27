@@ -1,7 +1,3 @@
-locals {
-  linode_ids = linode_lke_cluster.tf-k8s-cluster.pool[0].nodes[*].instance_id
-}
-
 resource "linode_lke_cluster" "tf-k8s-cluster" {
   label       = "tf-k8s-cluster"
   k8s_version = var.k8s_version
@@ -12,9 +8,10 @@ resource "linode_lke_cluster" "tf-k8s-cluster" {
     type  = var.type
     count = var.linode_count
 
+    # Autoscale worker nodes
     autoscaler {
-      min = var.linode_count
-      max = 10
+      min = 3
+      max = 5
     }
   }
 
@@ -32,3 +29,14 @@ module "firewall_web" {
   tags           = var.tags
   linodes        = local.linode_ids
 }
+
+resource "local_file" "k8s_config" {
+  content         = base64decode(linode_lke_cluster.tf-k8s-cluster.kubeconfig)
+  filename        = local.k8s_config_file
+  file_permission = "0600"
+}
+
+# data "linode_nodebalancer" "traefik_loadbalancer" {
+#   depends_on = [ helm_release.traefik ]
+
+# }
