@@ -3,126 +3,10 @@ resource "azurerm_resource_group" "rg" {
   location = var.azure_rg_location
 }
 
-resource "azurerm_virtual_network" "vnet" {
-  name                = var.azure_vnet_name
-  address_space       = var.azure_vnet_addr
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
-resource "azurerm_subnet" "subnet" {
-  name                 = var.azure_subnet_name
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.azure_subnet_prefixes
-}
-
-resource "azurerm_network_security_group" "nsg" {
-  name                = var.azure_nsg_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
-resource "azurerm_network_security_rule" "ssh" {
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-
-  name                       = "ssh"
-  priority                   = 1001
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "22"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_network_security_rule" "k8s-allow-api-server" {
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-
-  name                       = "k8s-allow-api-server"
-  priority                   = 1002
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "6443"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_network_security_rule" "k8s-allow-kubectl-commands" {
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-
-  name                       = "k8s-allow-kubectl-commands"
-  priority                   = 1003
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "8080"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_network_security_rule" "k8s-allow-kubelet-check" {
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-
-  name                       = "k8s-allow-kubelet-check"
-  priority                   = 1004
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "10248"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_network_security_rule" "k8s-allow-http" {
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-
-  name                       = "k8s-allow-http"
-  priority                   = 1005
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "80"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_network_security_rule" "k8s-allow-https" {
-  resource_group_name         = azurerm_resource_group.rg.name
-  network_security_group_name = azurerm_network_security_group.nsg.name
-
-  name                       = "k8s-allow-https"
-  priority                   = 1006
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "443"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-
-resource "azurerm_network_interface" "nic" {
-  name                = var.azure_nic_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                          = var.azure_nic_ipconfig_name
-    subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = var.azure_nic_ipconfig_allocation
-  }
+module "network" {
+  source      = "./modules/network"
+  rg_name     = azurerm_resource_group.rg.name
+  rg_location = azurerm_resource_group.rg.location
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
@@ -131,10 +15,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
   location                        = azurerm_resource_group.rg.location
   size                            = var.azure_vm_size
   disable_password_authentication = "false"
+  computer_name                   = "master-node"
   admin_username                  = var.azure_admin_username
   admin_password                  = var.azure_admin_password
+
   network_interface_ids = [
-    azurerm_network_interface.nic.id,
+    module.network.nic_id,
   ]
 
   #   admin_ssh_key {
