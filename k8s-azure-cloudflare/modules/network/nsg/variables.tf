@@ -12,9 +12,3 @@ variable "azure_nsg_name" {
   description = "Azure VM Network Security Group name"
   default     = "nsg"
 }
-
-# - - - - - Azure Subnet Variables - - - - - #
-variable "subnet_id" {
-  description = "Azure Subnet ID"
-}
-

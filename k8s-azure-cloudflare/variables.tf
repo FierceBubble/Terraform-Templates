@@ -29,8 +29,15 @@ variable "azure_rg_location" {
 
 # - - - - - Azure VM Variables - - - - - #
 variable "azure_vm_name" {
+  type        = string
   description = "Azure VM name"
   default     = "Master-Node"
+}
+
+variable "azure_vm_host_name" {
+  type        = string
+  description = "Azure VM host name"
+  default     = "master-node"
 }
 
 variable "azure_vm_size" {
@@ -38,12 +45,22 @@ variable "azure_vm_size" {
   default     = "Standard_D2s_v3"
 }
 
-variable "azure_admin_password" {
-  description = "Admin password to VM"
+variable "azure_vm_disable_password" {
+  description = "Azure VM disable password"
+  default     = "false"
 }
 
 variable "azure_admin_username" {
+  type        = string
+  nullable    = false
   description = "Admin username to VM"
+}
+
+variable "azure_admin_password" {
+  type        = string
+  nullable    = false
+  description = "Admin password to VM"
+  sensitive   = true
 }
 
 variable "azure_vm_os_disk_type" {
@@ -57,8 +74,12 @@ variable "azure_vm_os_disk_caching" {
 }
 
 variable "azure_vm_os_disk_size" {
+  type        = map(number)
   description = "Azure VM OS Disk size (GB)"
-  default     = 50
+  default = {
+    "master" = 50
+    "worker" = 35
+  }
 }
 
 variable "azure_vm_image_publisher" {
@@ -86,3 +107,18 @@ variable "azure_vm_image_version" {
 # 0001-com-ubuntu-server-focal
 # 20_04-lts
 # latest
+
+# - - - - - Dynamic Variables - - - - - #
+variable "worker_vm_count" {
+  type        = number
+  description = "Total number of worker nodes"
+  validation {
+    condition     = var.worker_vm_count >= 1
+    error_message = "Worker nodes should be 1 or more!"
+  }
+}
+
+# variable "nic_id_map" {
+#   type = map(string)
+#   description = "A map of NIC ids"
+# }
