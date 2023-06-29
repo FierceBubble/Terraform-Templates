@@ -11,18 +11,21 @@ module "network" {
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                            = var.azure_vm_name
-  resource_group_name             = azurerm_resource_group.rg.name
-  location                        = azurerm_resource_group.rg.location
-  size                            = var.azure_vm_size
-  disable_password_authentication = var.azure_vm_disable_password
-  computer_name                   = var.azure_vm_host_name
-  admin_username                  = var.azure_admin_username
-  admin_password                  = var.azure_admin_password
+  name                = var.azure_vm_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  size                = var.azure_vm_size
+  computer_name       = var.azure_vm_host_name
+  admin_username      = var.azure_admin_username
 
   network_interface_ids = [
     module.network.nic_id,
   ]
+
+  admin_ssh_key {
+    username   = var.azure_admin_username
+    public_key = file(local.public_key_dir)
+  }
 
   os_disk {
     caching              = var.azure_vm_os_disk_caching

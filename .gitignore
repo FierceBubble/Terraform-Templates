@@ -39,3 +39,6 @@ terraform.rc
 # Ignore Backend and kubeconfig.yaml (** IMPORTANT ***)
 */backend
 */.kube
+
+# Ignore local files
+*/locals.tf

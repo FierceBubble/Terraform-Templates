@@ -112,6 +112,7 @@ variable "azure_vm_image_version" {
 variable "worker_vm_count" {
   type        = number
   description = "Total number of worker nodes"
+  default     = 1
   validation {
     condition     = var.worker_vm_count >= 1
     error_message = "Worker nodes should be 1 or more!"
