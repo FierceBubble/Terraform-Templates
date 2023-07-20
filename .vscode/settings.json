@@ -1,0 +1,4 @@
+{
+    "ansible.python.interpreterPath": "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+    "yaml.schemaStore.enable": false
+}
