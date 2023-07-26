@@ -1,58 +1,15 @@
-terraform {
-  required_version = ">= 0.13.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 5.9.0"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 3.0.0"
-    }
-
-    civo = {
-      source  = "civo/civo"
-      version = ">= 1.0.35"
-    }
-
-    linode = {
-      source  = "linode/linode"
-      version = ">= 1.16.1"
-    }
-
-    upcloud = {
-      source  = "UpCloudLtd/upcloud"
-      version = ">= 2.12.0"
-    }
-
-    vultr = {
-      source  = "vultr/vultr"
-      version = ">= 2.15.1"
-    }
-  }
-}
-
 # - - - - - AWS Module - - - - - #
-provider "aws" {
-  region     = "ap-southeast-1"
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-}
-
 module "aws" {
-  source = "./modules/aws"
+  source         = "./modules/aws"
+  aws_access_key = var.aws_access_key
+  aws_secret_key = var.aws_secret_key
 }
 
 # - - - - - Azure Module - - - - - #
-provider "azurerm" {
-  features {}
-
-  subscription_id = var.azure_subscription_id
-  tenant_id       = var.azure_tenant_id
-}
-
-module "azure_vm" {
-  source = "./modules/azure"
+module "azure" {
+  source                = "./modules/azure"
+  azure_subscription_id = var.azure_subscription_id
+  azure_tenant_id       = var.azure_tenant_id
 
   azure_rg_name     = "RG-TF"
   azure_rg_location = "East Asia"
@@ -95,45 +52,37 @@ module "azure_vm" {
 }
 
 # - - - - - Civo Module - - - - - #
-provider "civo" {
-  token  = var.civo_token
-  region = "LON1"
-}
-
 module "civo" {
-  source = "./modules/civo"
+  source     = "./modules/civo"
+  civo_token = var.civo_token
 }
 
 # - - - - - Digital Ocean Module - - - - - #
+# module "digitalocean" {
+#   source             = "./modules/digitalocean"
+#   digitalocean_token = var.digitalocean_token
+# }
 
-
-# - - - - - Linode Module - - - - - #
-provider "linode" {
-  token = var.linode_token
+# - - - - - Hetzner Module - - - - - #
+module "hetzner" {
+  source = "./modules/hetzner"
 }
 
+# - - - - - Linode Module - - - - - #
 module "linode" {
-  source = "./modules/linode"
+  source       = "./modules/linode"
+  linode_token = var.linode_token
 }
 
 # - - - - - UpCloud Module - - - - - #
-provider "upcloud" {
-  username  = var.upcloud_username
-  password  = var.upcloud_password
-  retry_max = 3
-}
+# module "upcloud" {
+#   source           = "./modules/upcloud"
+#   upcloud_username = var.upcloud_username
+#   upcloud_password = var.upcloud_password
+# }
 
-module "upcloud" {
-  source = "./modules/upcloud"
-}
-
-# - - - - - Vultr Module - - - - - #
-provider "vultr" {
-  api_key     = var.vultr_api_key
-  rate_limit  = 100
-  retry_limit = 3
-}
-
-module "vultr" {
-  source = "./modules/vultr"
-}
+# # - - - - - Vultr Module - - - - - #
+# module "vultr" {
+#   source        = "./modules/vultr"
+#   vultr_api_key = var.vultr_api_key
+# }

@@ -1,3 +1,20 @@
+terraform {
+  required_version = ">= 0.13.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 3.0.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+
+  subscription_id = var.azure_subscription_id
+  tenant_id       = var.azure_tenant_id
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = var.azure_rg_name
   location = var.azure_rg_location

@@ -1,3 +1,11 @@
+# - - - - - Azure Variables - - - - - #
+variable "azure_subscription_id" {
+  sensitive = true
+}
+variable "azure_tenant_id" {
+  sensitive = true
+}
+
 # - - - - - Azure Resource Group Variables - - - - - #
 variable "azure_rg_name" {
   description = "Azure RG name"
