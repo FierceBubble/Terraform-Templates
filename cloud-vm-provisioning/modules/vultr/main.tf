@@ -15,17 +15,17 @@ provider "vultr" {
 }
 
 resource "vultr_instance" "my_instance" {
-  plan        = "vc2-1c-1gb"
-  region      = "sea"
-  os_id       = 167
-  label       = "terraform"
-  tags        = ["terraform"]
-  hostname    = "terraform"
-  enable_ipv6 = true
-  backups     = "enabled"
-  backups_schedule {
-    type = "daily"
-  }
-  ddos_protection  = true
-  activation_email = false
+  plan             = var.vultr_instance_plan
+  region           = var.vultr_instance_region
+  os_id            = var.vultr_instance_os
+  label            = var.vultr_instance_label
+  tags             = var.vultr_instance_tags
+  hostname         = var.vultr_instance_hostname
+  enable_ipv6      = var.vultr_instance_enable_ipv6
+  backups          = var.vultr_instance_backups
+  ddos_protection  = var.vultr_instance_ddos_protection
+  activation_email = var.vultr_instance_activation_email
+  # backups_schedule {
+  #   type = var.vultr_instance_backups_schedule_type
+  # }
 }

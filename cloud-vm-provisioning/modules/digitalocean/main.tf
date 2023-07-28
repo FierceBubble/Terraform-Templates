@@ -11,3 +11,10 @@ terraform {
 provider "digitalocean" {
   token = var.digitalocean_token
 }
+
+resource "digitalocean_droplet" "droplet" {
+  name   = var.do_droplet_name
+  image  = var.do_droplet_image
+  region = var.do_droplet_region
+  size   = var.do_droplet_size
+}
