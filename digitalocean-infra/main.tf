@@ -36,7 +36,7 @@ module "digitalocean" {
     {
       email       = ["fiercebubble.tv@gmail.com"]
       channel     = "terraform-prod"
-      url         = "https://hooks.slack.com/services/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"
+      url         = var.digitalocean_slack_webhook_url
       window      = "5m"
       type        = "v1/insights/droplet/cpu"
       compare     = "GreaterThan"
@@ -47,7 +47,7 @@ module "digitalocean" {
     {
       email       = ["fiercebubble.tv@gmail.com"]
       channel     = "terraform-prod"
-      url         = "https://hooks.slack.com/services/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"
+      url         = var.digitalocean_slack_webhook_url
       window      = "5m"
       type        = "v1/insights/droplet/memory_utilization_percent"
       compare     = "GreaterThan"
