@@ -17,16 +17,18 @@ data "digitalocean_ssh_key" "ssh-key" {
 }
 
 resource "digitalocean_droplet" "droplet" {
-  name       = var.do_droplet_name
-  tags       = var.do_droplet_tags
-  image      = var.do_droplet_image
-  region     = var.do_droplet_region
-  size       = var.do_droplet_size
-  ipv6       = var.do_droplet_ipv6
-  monitoring = var.do_droplet_monitoring
-  backups    = var.do_droplet_backups
+  count = length(var.do_droplets)
 
-  volume_ids = [digitalocean_volume.volume.id]
+  name       = var.do_droplets[count.index].name
+  tags       = var.do_droplets[count.index].tags
+  image      = var.do_droplets[count.index].image
+  region     = var.do_droplets[count.index].region
+  size       = var.do_droplets[count.index].size
+  ipv6       = var.do_droplets[count.index].ipv6
+  monitoring = var.do_droplets[count.index].monitoring
+  backups    = var.do_droplets[count.index].backups
+
+  volume_ids = [digitalocean_volume.volume[count.index].id]
   vpc_uuid   = module.digitalocean_vpc.do_vpc_id
 
   ssh_keys = [
@@ -35,10 +37,11 @@ resource "digitalocean_droplet" "droplet" {
 }
 
 resource "digitalocean_volume" "volume" {
-  name        = var.do_volume_name
+  count       = length(var.do_droplets)
+  name        = "${var.do_droplets[count.index].name}-${var.do_volume_name}"
   region      = var.do_volume_region
   size        = var.do_volume_size
-  description = var.do_volume_description
+  description = "${var.do_droplets[count.index].name}-${var.do_volume_description}"
   tags        = var.do_volume_tags
 
   initial_filesystem_type  = var.do_volume_filesystem_type
@@ -47,8 +50,10 @@ resource "digitalocean_volume" "volume" {
 
 # Modules
 module "digitalocean_firewall" {
-  source      = "./networking/firewalls"
-  droplet_ids = [digitalocean_droplet.droplet.id]
+  source         = "./networking/firewalls"
+  droplet_ids    = digitalocean_droplet.droplet[*].id
+  inbound_rules  = var.do_firewall_inbound_rules
+  outbound_rules = var.do_firewall_outbound_rules
 }
 
 module "digitalocean_vpc" {
@@ -59,7 +64,7 @@ module "digitalocean_vpc" {
 
 module "digitalocean_monitoring_alerts" {
   source            = "./monitoring/alert"
-  do_droplet_ids    = [digitalocean_droplet.droplet.id]
+  do_droplet_ids    = digitalocean_droplet.droplet[*].id
   do_monitor_alerts = var.do_monitor_alerts
 }
 

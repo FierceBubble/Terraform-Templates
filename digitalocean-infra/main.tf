@@ -4,16 +4,32 @@ module "digitalocean" {
   digitalocean_ssh_key = "Terraform"
 
   # Droplet
-  do_droplet_name = "terraform-web"
-  do_droplet_tags = [
-    "webapp-droplet"
+  do_droplets = [
+    {
+      name = "terraform-web"
+      tags = [
+        "webapp-droplet"
+      ]
+      image      = "ubuntu-22-04-x64"
+      region     = "sgp1"
+      size       = "s-1vcpu-1gb"
+      ipv6       = true
+      monitoring = true
+      backups    = true
+    },
+    {
+      name = "terraform-microservice-1"
+      tags = [
+        "webapp-droplet"
+      ]
+      image      = "ubuntu-22-04-x64"
+      region     = "sgp1"
+      size       = "s-1vcpu-1gb"
+      ipv6       = true
+      monitoring = true
+      backups    = true
+    }
   ]
-  do_droplet_image      = "ubuntu-22-04-x64"
-  do_droplet_region     = "sgp1"
-  do_droplet_size       = "s-1vcpu-1gb"
-  do_droplet_ipv6       = true
-  do_droplet_monitoring = true
-  do_droplet_backups    = true
 
   # Volume
   do_volume_name        = "terraform-volume"
@@ -30,6 +46,43 @@ module "digitalocean" {
   # VPC
   do_vpc_name   = "terraform-vpc"
   do_vpc_region = "sgp1"
+
+  # Firewall
+  do_firewall_inbound_rules = [
+    {
+      protocol         = "tcp"
+      port_range       = "22"
+      source_addresses = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol         = "tcp"
+      port_range       = "80"
+      source_addresses = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol         = "tcp"
+      port_range       = "443"
+      source_addresses = ["0.0.0.0/0", "::/0"]
+    }
+  ]
+
+  do_firewall_outbound_rules = [
+    {
+      protocol              = "icmp"
+      port_range            = "1-65535"
+      destination_addresses = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol              = "tcp"
+      port_range            = "1-65535"
+      destination_addresses = ["0.0.0.0/0", "::/0"]
+    },
+    {
+      protocol              = "udp"
+      port_range            = "1-65535"
+      destination_addresses = ["0.0.0.0/0", "::/0"]
+    },
+  ]
 
   # Monitoring
   do_monitor_alerts = [

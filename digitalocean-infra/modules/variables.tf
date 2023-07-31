@@ -16,16 +16,22 @@ variable "do_volume_filesystem_type" {}
 variable "do_volume_filesystem_label" {}
 
 # Droplet
-variable "do_droplet_name" {}
-variable "do_droplet_tags" {
-  type = list(string)
+variable "do_droplets" {
+  type = list(object({
+    name       = string
+    tags       = list(string)
+    image      = string
+    region     = string
+    size       = string
+    ipv6       = bool
+    monitoring = bool
+    backups    = bool
+  }))
 }
-variable "do_droplet_image" {}
-variable "do_droplet_region" {}
-variable "do_droplet_size" {}
-variable "do_droplet_ipv6" {}
-variable "do_droplet_monitoring" {}
-variable "do_droplet_backups" {}
+
+# Firewall
+variable "do_firewall_inbound_rules" {}
+variable "do_firewall_outbound_rules" {}
 
 # VPC
 variable "do_vpc_name" {}
