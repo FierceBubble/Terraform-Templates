@@ -71,14 +71,29 @@ module "civo" {
 
 # - - - - - Digital Ocean Module - - - - - #
 module "digitalocean" {
-  source             = "./modules/digitalocean"
-  digitalocean_token = var.digitalocean_token
+  source               = "./modules/digitalocean"
+  digitalocean_token   = var.digitalocean_token
+  digitalocean_ssh_key = "Terraform"
 
   # Droplet
-  do_droplet_name   = "terraform-web"
-  do_droplet_image  = "ubuntu-22-04-x64"
-  do_droplet_region = "sgp1"
-  do_droplet_size   = "s-1vcpu-1gb"
+  do_droplet_name       = "terraform-web"
+  do_droplet_tags       = ["webapp-droplet", "intel", "x64", "sgp1", "1vCPU", "1GB"]
+  do_droplet_image      = "ubuntu-22-04-x64"
+  do_droplet_region     = "sgp1"
+  do_droplet_size       = "s-1vcpu-1gb"
+  do_droplet_ipv6       = true
+  do_droplet_monitoring = true
+  do_droplet_backups    = true
+
+  # Volume
+  do_volume_name        = "terraform-volume"
+  do_volume_size        = 50
+  do_volume_region      = "sgp1"
+  do_volume_description = "Terraform-web volume"
+  do_volume_tags        = ["ext4", "sgp1", "50"]
+
+  do_volume_filesystem_type  = "ext4"
+  do_volume_filesystem_label = "ext4"
 }
 
 # - - - - - Hetzner Module - - - - - #
@@ -147,7 +162,7 @@ module "vultr" {
   vultr_instance_hostname         = "vultr-terraform"
   vultr_instance_enable_ipv6      = true
   vultr_instance_backups          = "disabled"
-  vultr_instance_ddos_protection  = true
+  vultr_instance_ddos_protection  = false
   vultr_instance_activation_email = false
 
   # Instance Backups
