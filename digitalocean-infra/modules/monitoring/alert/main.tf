@@ -9,7 +9,8 @@ terraform {
 }
 
 resource "digitalocean_monitor_alert" "alerts" {
-  for_each = { for each in var.do_monitor_alerts : each.type => each }
+  for_each = { for alert in var.do_monitor_alerts : alert.type => alert }
+
   alerts {
     email = each.value.email
     slack {
