@@ -1,6 +1,8 @@
 # - - - - - Terraform Commands - - - - -
 init:
 	terraform init 
+init-config:
+	terraform init -backend-config=backend
 validate:
 	terraform validate
 plan:
